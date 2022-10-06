@@ -1,0 +1,13 @@
+GET http://localhost:3000/getallusers
+
+###
+GET http://localhost:3000/getuser/2
+
+###
+POST http://localhost:3000/createuser
+
+###
+PUT http://localhost:3000/updateuser/id
+
+###
+DELETE  http://localhost:3000/deleteuser/id
