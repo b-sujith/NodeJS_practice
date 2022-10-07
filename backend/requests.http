@@ -1,13 +1,27 @@
 GET http://localhost:3000/getallusers
 
 ###
-GET http://localhost:3000/getuser/2
+GET http://localhost:3000/getuser/3
 
 ###
 POST http://localhost:3000/createuser
+Content-Type: application/json
+
+{
+    "id" : 3,
+    "name" : "rajesh",
+    "age" : 34
+}
 
 ###
-PUT http://localhost:3000/updateuser/id
+PUT http://localhost:3000/updateuser
+Content-Type: application/json
+
+{
+    "id" : 3,
+    "name" : "rajesh",
+    "age" : 24
+}
 
 ###
-DELETE  http://localhost:3000/deleteuser/id
+DELETE  http://localhost:3000/deleteuser/2
