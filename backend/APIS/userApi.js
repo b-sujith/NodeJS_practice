@@ -1,100 +1,122 @@
-//fake data to verify route handlers
-let users=[
-    {
-        id : 1,
-        name : "sujith",
-        age : 21
-    },
-    {
-        id : 2,
-        name : "shubham",
-        age : 22
-    }
-]
-
 const express = require('express')
+const expressAsyncHandler = require('express-async-handler')
+const bcryptjs = require('bcryptjs')
+const jsonwebtoken = require('jsonwebtoken')
+
+//route requests from server to userAPI
 userApp = express.Router()
 
 //parsing body to be accessed by request object
 userApp.use(express.json())
 
 //creating a route to handle '/getallusers'
-userApp.get('/getallusers',(request,response)=>{
-    response.send({mesaage:`all users`,payload:users})
-})
+userApp.get('/getallusers',expressAsyncHandler(async (request,response)=>{
 
-//creating a route to handle '/getalluser/id'
-userApp.get('/getuser/:id',(request,response)=>{
+    //retrieving user collection obj from app.js
+    let userCollectionObj = request.app.get("userCollectionObj")
+    //getting allUsers cursor,converting into array
+    let allUsers = await userCollectionObj.find().toArray()
+    //send response
+    response.send({message:`all users`,payload:allUsers});
 
-    let userID = request.params.id; //getting argument of url using params property
+}))
 
-    //searching for user using id
-    let userObj = users.find(userObj=>userObj.id==userID);
+//login handler
+userApp.post('/login',expressAsyncHandler(async (request,response)=>{
 
+    //retrieving user collection obj from app.js
+    let userCollectionObj = request.app.get("userCollectionObj")
+    //get userObjName
+    let userCredObj = request.body
+    //search user with username in DB
+    let userDBObj = await userCollectionObj.findOne({username : {$eq : userCredObj.username}})
     //if user not found
-    if(userObj==undefined)
-        response.send({message:`USer doesn't exist`});
-    //if user found
-    else
-        response.send({message:`user found`,payload:userObj});
-})
+    if(userDBObj==null)
+        response.send({message:`Invalid user`});
+    else{
+        //comparing plain pw with hashed pw by converting plain pw to hashed->returns bool
+        let status = await bcryptjs.compare(userCredObj.password,userDBObj.password)
+        //if password doesn't match
+        if(status==false)
+            response.send({message:`Invalid password`})
+        //password match
+        else{
+            //creating a token for authenticating login-->uses encryption as this token has to be verified in future
+            //user credentials,encryption key,expiry time must be given as args 
+            let token = jsonwebtoken.sign({username : userDBObj.username},'abcdef',{expiresIn:60})
+            //send token to user,allow user access
+            response.send({message:`Login successful`,payload:token,userObj:userDBObj});
+        }
+    }
 
-//creating a route to handle "/createuser"
-userApp.post("/createuser",(request,response)=>{
-    //obtaining user data in json format which is converted to js object
-    userObj = request.body
-    //adding userobj into the users array
-    users.push(userObj)
-    response.send({mesaage:`User created`})
-})
+}))
+
+//createuser handler
+userApp.post("/createuser",expressAsyncHandler(async (request,response)=>{
+
+    //retrieving user collection obj from app.js
+    let userCollectionObj = request.app.get("userCollectionObj")
+    //get newUser obj
+    let newUserObj = request.body
+    //search user in DB
+    let userinDB = await userCollectionObj.findOne({username : {$eq : newUserObj.username}})
+    //if user exists
+    if(userinDB !== null)
+        response.send({message:`Username already exists`})
+    else{
+        //hashing pw
+        let hashedPassword = await bcryptjs.hash(newUserObj.password,6)
+        //replacing pw with hashedpw
+        newUserObj.password = hashedPassword
+        //inserting user into DB
+        await userCollectionObj.insertOne(newUserObj)
+        //send response
+        response.send({message:`User with username:${newUserObj.username} created`});
+    }
+
+}))
 
 //creating a route to handle "/updateuser"
-userApp.put("/updateuser",(request,response)=>{
-    //obtaining user data in json format which is converted to js object
-    newuserObj = request.body
+userApp.put("/updateuser",expressAsyncHandler(async (request,response)=>{
 
-    newuserObjId = newuserObj.id    //getting user id to check for the users id in arr
-
-    //searching for the userobj using id
-    let userObj = users.find(userObj=>userObj.id==newuserObjId)
-
-    //if user not found
-    if(userObj==undefined)
-        response.send({message:`user not found`});
+    //retrieving user collection obj from app.js
+    let userCollectionObj = request.app.get("userCollectionObj")
+    //get userCredObj
+    let userCredObj = request.body
+    //search user in DB
+    let userDBObj = await userCollectionObj.findOne({username : {$eq : userCredObj.username}})
+    //if user doesn't exist
+    if(userDBObj==null)
+        response.send({message:`user with username:${userCredObj.username} does not exist`})
     else{
-
-        //loop to match newuserid with existing id and then updating
-        for(let i=0;i<users.length;i++){
-            if(users[i].id === newuserObjId){
-                users[i] = newuserObj
-                break
-            }
-        }
+        //update userDBObj's age,email with userCredObj's details
+        await userCollectionObj.updateOne({username:{$eq : userDBObj.username}}, {$set : {age:userCredObj.age,email:userCredObj.email}});
+        //send response
+        response.send({message:`user details updated`});
     }
-    response.send({message:`user updated`})
-})
+
+}))
 
 //creating a route to handle "/deleteuser"
-userApp.delete("/deleteuser/:id",(request,response)=>{
-    //getting user id from argument to check for the users id in arr
-    let userID = request.params.id
+userApp.delete("/deleteuser/:id",expressAsyncHandler(async (request,response)=>{
 
-    //searching for the userobj using id
-    let userObj = users.find(userObj=>userObj.id==userID)
-
-    //if user not found
-    if(userObj==undefined)
-        response.send({message:`user not found`});
+    //retrieving user collection obj from app.js
+    let userCollectionObj = request.app.get("userCollectionObj")
+    //get userObj name
+    let userObjName = request.params.id
+    //search user in DB
+    let userDBObj = await userCollectionObj.findOne({username : {$eq : userObjName}})
+    //if not found
+    if(userDBObj == null)
+        response.send({message:`user not found`})
     else{
-
-        //loop to match userid and then delete the obj
-        for(let i=0;i<users.length;i++){
-            if(users[i].id==userID){
-                users.splice(i,1);
-            }
-        }
-        response.send({message:`user deleted`});
+        //deleting user
+        await userCollectionObj.deleteOne({username : {$eq : userObjName}})
+        //send response
+        response.send({message:`user with username:${userObjName} deleted`})
     }
-})
+    
+}))
 
+//exporting userApi
 module.exports=userApp

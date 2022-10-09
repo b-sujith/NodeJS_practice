@@ -1,16 +1,23 @@
 GET http://localhost:3000/user-api/getallusers
 
 ###
-GET http://localhost:3000/user-api/getuser/2
+POST http://localhost:3000/user-api/login
+Content-Type: application/json
+
+{
+    "username" : "rohan",
+    "password" : "rohan"
+}
 
 ###
 POST http://localhost:3000/user-api/createuser
 Content-Type: application/json
 
 {
-    "id" : 3,
-    "name" : "rajesh",
-    "age" : 34
+    "username" : "rohan",
+    "password" : "rohan",
+    "age" : 22,
+    "email" : "rohanjoshi@gmail.com"
 }
 
 ###
@@ -18,13 +25,14 @@ PUT http://localhost:3000/user-api/updateuser
 Content-Type: application/json
 
 {
-    "id" : 3,
-    "name" : "rajesh",
-    "age" : 14
+    "username" : "rohan",
+    "password" : "rohan",
+    "age" : 23,
+    "email" : "rohan123joshi@gmail.com"
 }
 
 ###
-DELETE  http://localhost:3000/user-api/deleteuser/2
+DELETE  http://localhost:3000/user-api/deleteuser/rohan
 
 
 
