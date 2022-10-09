@@ -1,10 +1,10 @@
-GET http://localhost:3000/getallusers
+GET http://localhost:3000/user-api/getallusers
 
 ###
-GET http://localhost:3000/getuser/3
+GET http://localhost:3000/user-api/getuser/2
 
 ###
-POST http://localhost:3000/createuser
+POST http://localhost:3000/user-api/createuser
 Content-Type: application/json
 
 {
@@ -14,7 +14,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:3000/updateuser
+PUT http://localhost:3000/user-api/updateuser
 Content-Type: application/json
 
 {
@@ -24,4 +24,22 @@ Content-Type: application/json
 }
 
 ###
-DELETE  http://localhost:3000/deleteuser/2
+DELETE  http://localhost:3000/user-api/deleteuser/2
+
+
+
+###
+GET http://localhost:3000/product-api/getallproducts
+
+###
+GET http://localhost:3000/product-api/getproduct/2
+
+###
+POST http://localhost:3000/product-api/createproduct 
+
+###
+PUT http://localhost:3000/product-api/updateproduct 
+
+###
+DELETE http://localhost:3000/product-api/deleteproduct/2 
+

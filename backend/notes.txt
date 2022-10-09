@@ -41,7 +41,7 @@ MIDDLEWARE-->define middleware before calling it
             app.use(middleware)
         execute for a specific req
             app.httpMethod("path",middleware,handler)
-        execute for a specific path
+        execute for a specific path-->used for ,multiple APIS
             app.use("path",middleware)
 
     HANDLING INVALID PATHS-->called at last
@@ -57,3 +57,12 @@ MIDDLEWARE-->define middleware before calling it
 
 
 MULTIPLE APIS
+    in specific apis:
+        create a sep folder APIS and transfer all specific apis
+        use express.ROUTER fctn to route requests from server to api
+        parsing body must be done specific to each api
+        finally export each specific apiObject
+    in app.js
+        remove all the req handlers
+        import allApiObjects
+        send requests from here to specific apis using path middleware mechanism
