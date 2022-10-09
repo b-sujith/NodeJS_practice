@@ -38,11 +38,10 @@ const middleware2=(request,response,next)=>{
 
 //activate/call middlewares
 app.use(middleware1)
-app.use("/getallusers",middleware2)
 
 //creating a route to handle '/getallusers' ; calling middleware2 specifically for this req
     app.get('/getallusers',(request,response)=>{
-        response.send({mesaage:"all users",payload:users})
+        response.send({mesaage:`all users`,payload:users})
     })
 
 //creating a route to handle '/getalluser/id'
@@ -55,10 +54,10 @@ app.use("/getallusers",middleware2)
 
         //if user not found
         if(userObj==undefined)
-            response.send({message:"USer doesn't exist"});
+            response.send({message:`USer doesn't exist`});
         //if user found
         else
-            response.send({message:"user found",payload:userObj});
+            response.send({message:`user found`,payload:userObj});
     })
 
 //creating a route to handle "/createuser"
@@ -67,7 +66,7 @@ app.post("/createuser",(request,response)=>{
     userObj = request.body
     //adding userobj into the users array
     users.push(userObj)
-    response.send({mesaage:"User created"})
+    response.send({mesaage:`User created`})
 })
 
 //creating a route to handle "/updateuser"
@@ -82,7 +81,7 @@ app.put("/updateuser",(request,response)=>{
 
     //if user not found
     if(userObj==undefined)
-        response.send({message:"user not found"});
+        response.send({message:`user not found`});
     else{
 
         //loop to match newuserid with existing id and then updating
@@ -93,7 +92,7 @@ app.put("/updateuser",(request,response)=>{
             }
         }
     }
-    response.send({message:"user updated"})
+    response.send({message:`user updated`})
 
 })
 
@@ -107,7 +106,7 @@ app.delete("/deleteuser/:id",(request,response)=>{
 
     //if user not found
     if(userObj==undefined)
-        response.send({message:"user not found"});
+        response.send({message:`user not found`});
     else{
 
         //loop to match userid and then delete the obj
@@ -116,8 +115,18 @@ app.delete("/deleteuser/:id",(request,response)=>{
                 users.splice(i,1);
             }
         }
-        response.send({message:"user deleted"});
+        response.send({message:`user deleted`});
     }
+})
+
+//invalid path handling middleware
+app.use((request,response,next)=>{
+    response.send({message:`path ${request.url} is invalid`})
+})
+
+//error handling middleware
+app.use((error,request,response,next)=>{
+    response.send({message:"Error occured",reason:`${error.message}`})
 })
 
 //assigning port number to the server obj

@@ -20,7 +20,7 @@ Content-Type: application/json
 {
     "id" : 3,
     "name" : "rajesh",
-    "age" : 24
+    "age" : 14
 }
 
 ###
