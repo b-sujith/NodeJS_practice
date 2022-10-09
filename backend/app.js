@@ -1,10 +1,3 @@
-//express module returns a function(not object)
-const { response } = require('express')
-const express = require('express')
-
-//express function returns express object that contains http server (app is a conventional name used)
-const app = express()
-app.use(express.json())
 //fake data to verify route handlers
 let users=[
     {
@@ -19,12 +12,38 @@ let users=[
     }
 ]
 
+//express module returns a function(not object)
+const { response } = require('express')
+const express = require('express')
+
+//express function returns express object that contains http server (app is a conventional name used)
+const app = express()
+
+//parsing body to be accessed by request object
+app.use(express.json())
+
 //creating REST API
 
-//creating a route to handle '/getallusers'
-app.get('/getallusers',(request,response)=>{
-    response.send({mesaage:"all users",payload:users})
-})
+//creating middleware1
+const middleware1=(request,response,next)=>{
+    console.log("middleware1");
+    next();
+}
+
+//creating middleware2
+const middleware2=(request,response,next)=>{
+    console.log("middleware2");
+    next();
+}
+
+//activate/call middlewares
+app.use(middleware1)
+app.use("/getallusers",middleware2)
+
+//creating a route to handle '/getallusers' ; calling middleware2 specifically for this req
+    app.get('/getallusers',(request,response)=>{
+        response.send({mesaage:"all users",payload:users})
+    })
 
 //creating a route to handle '/getalluser/id'
     app.get('/getuser/:id',(request,response)=>{
@@ -59,7 +78,7 @@ app.put("/updateuser",(request,response)=>{
     newuserObjId = newuserObj.id    //getting user id to check for the users id in arr
 
     //searching for the userobj using id
-    let userObj = users.find(userObj=>userObj.id==userID)
+    let userObj = users.find(userObj=>userObj.id==newuserObjId)
 
     //if user not found
     if(userObj==undefined)
