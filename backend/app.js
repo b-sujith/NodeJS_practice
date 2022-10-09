@@ -17,12 +17,12 @@ mongoClient.connect(DBurl)
     let dbObj = client.db("db1")
 
     //create collection objs from dbObj
-    let userCollection = dbObj.collection("usercollection");
-    let productCollection = dbObj.collection("productcollection");
+    let userCollectionObj = dbObj.collection("usercollection");
+    let productCollectionObj = dbObj.collection("productcollection");
 
     //share collection objects to APIS
-    app.set("userCollection",userCollection);
-    app.set("productCollection",productCollection);    
+    app.set("userCollectionObj",userCollectionObj);
+    app.set("productCollectionObj",productCollectionObj);    
 
     console.log("DB Connection is success");
 })

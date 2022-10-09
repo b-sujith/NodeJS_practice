@@ -32,14 +32,30 @@ DELETE  http://localhost:3000/user-api/deleteuser/2
 GET http://localhost:3000/product-api/getallproducts
 
 ###
-GET http://localhost:3000/product-api/getproduct/2
+GET http://localhost:3000/product-api/getproduct/200
 
 ###
 POST http://localhost:3000/product-api/createproduct 
+Content-Type: application/json
+
+{
+    "productId" : 200,
+    "product" : "Music System",
+    "brand" : "Sony",
+    "price" : "100000"
+}
 
 ###
 PUT http://localhost:3000/product-api/updateproduct 
+Content-Type: application/json
+
+{
+    "productId" : 200,
+    "product" : "Music System",
+    "brand" : "Sony",
+    "price" : "150000"
+}
 
 ###
-DELETE http://localhost:3000/product-api/deleteproduct/2 
+DELETE http://localhost:3000/product-api/deleteproduct/200 
 
